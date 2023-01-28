@@ -12,6 +12,11 @@
         container.innerHTML += "Entering Date " + (i + 1) + ": <input type='date'><br><br>";
       }
     }
+	function get12MonthsBefore(date) {
+	  var twelveMonthsBefore = new Date();
+	  twelveMonthsBefore.setFullYear(date.getFullYear() - 1, date.getMonth(), date.getDate());
+	  return twelveMonthsBefore;
+	}
     function checkDates() {
       var bnoApprovalDate = new Date(document.getElementById("bnoApprovalDate").value);
       var datesContainer = document.getElementById("datesContainer");
@@ -28,15 +33,16 @@
           valid = false;
           break;
         }
+		//get12MonthsBefore(leaveDate
         if (leaveDate >= bnoApprovalDate && leaveDate <= rolling12months) {
-          outsideUK += (enterDate - leaveDate) / (1000 * 60 * 60 * 24);
+          outsideUK += (leaveDate - enterDate) / (1000 * 60 * 60 * 24);
         }
       }
       if (valid) {
         if (outsideUK > 180) {
-          alert("You have exceeded 180 days outside of the UK in the last 12 months");
+          alert("YES You have exceeded 180 days outside of the UK in the last 12 months");
         } else {
-          alert("You have not exceeded 180 days outside of the UK in the last 12 months");
+          alert("NO You have not exceeded 180 days outside of the UK in the last 12 months");
         }
       }
     }
