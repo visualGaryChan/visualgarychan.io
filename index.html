@@ -12,6 +12,34 @@
         container.innerHTML += "Entering Date " + (i + 1) + ": <input type='date'><br><br>";
       }
     }
+    function checkDates() {
+      var bnoApprovalDate = new Date(document.getElementById("bnoApprovalDate").value);
+      var datesContainer = document.getElementById("datesContainer");
+      var leaveDates = datesContainer.getElementsByClassName("leaveDate");
+      var enterDates = datesContainer.getElementsByClassName("enterDate");
+      var outsideUK = 0;
+      var valid = true;
+      var rolling12months = new Date(bnoApprovalDate.getFullYear(), bnoApprovalDate.getMonth() + 12, bnoApprovalDate.getDate());
+      for (var i = 0; i < leaveDates.length; i++) {
+        var leaveDate = new Date(leaveDates[i].value);
+        var enterDate = new Date(enterDates[i].value);
+        if (enterDate < leaveDate) {
+          alert("Entering date must not be earlier than leaving date for trip " + (i + 1));
+          valid = false;
+          break;
+        }
+        if (leaveDate >= bnoApprovalDate && leaveDate <= rolling12months) {
+          outsideUK += (enterDate - leaveDate) / (1000 * 60 * 60 * 24);
+        }
+      }
+      if (valid) {
+        if (outsideUK > 180) {
+          alert("You have exceeded 180 days outside of the UK in the last 12 months");
+        } else {
+          alert("You have not exceeded 180 days outside of the UK in the last 12 months");
+        }
+      }
+    }
   </script>
 </head>
 <body>
@@ -23,5 +51,7 @@
   <button onclick="generateDates()">Generate Dates</button>
   <br><br>
   <div id="datesContainer"></div>
+  <br><br>
+  <button onclick="checkDates()">Check Dates</button>
 </body>
 </html>
