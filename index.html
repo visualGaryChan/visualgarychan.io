@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Trip Planner</title>
+  <title>BNO VISA outside UK days calculator</title>
   <script>
     function generateDates() {
       var numTrips = document.getElementById("numTrips").value;
@@ -36,6 +36,7 @@
 		//get12MonthsBefore(leaveDate
         if (leaveDate >= bnoApprovalDate && leaveDate <= rolling12months) {
           outsideUK += (leaveDate - enterDate) / (1000 * 60 * 60 * 24);
+		  alert(outsideUK);
         }
       }
       if (valid) {
@@ -49,7 +50,7 @@
   </script>
 </head>
 <body>
-  <h1>Trip Planner</h1>
+  <h1>BNO VISA outside UK days calculator</h1>
   <label for="bnoApprovalDate">BNO VISA Approval Date:</label>
   <input type="date" id="bnoApprovalDate"><br><br>
   <label for="numTrips">Number of Trips:</label>
