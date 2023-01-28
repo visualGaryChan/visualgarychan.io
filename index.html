@@ -1,2 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Days Outside UK Calculator</title>
+  </head>
+  <body>
+    <form>
+      <label for="approval-date">Approval Date:</label>
+      <input type="date" id="approval-date" name="approval-date"><br><br>
+      <label for="entry-date">Entry Date:</label>
+      <input type="date" id="entry-date" name="entry-date"><br><br>
+      <label for="exit-date">Exit Date:</label>
+      <input type="date" id="exit-date" name="exit-date"><br><br>
+      <button type="button" onclick="calculate()">Calculate</button>
+    </form>
+    <br>
+    <div id="result"></div>
+    <script>
+      function calculate() {
+        // Get the approval date, entry dates, and exit dates from the form
+        let approvalDate = new Date(document.querySelector("#approval-date").value);
+        let entryDates = [new Date(document.querySelector("#entry-date").value)];
+        let exitDates = [new Date(document.querySelector("#exit-date").value)];
+        
+        // Call the calculateDaysOutsideUK function
+        let result = calculateDaysOutsideUK(approvalDate, entryDates, exitDates);
+        // Display the result
+        document.querySelector("#result").innerHTML = result;
+      }
+    </script>
+  </body>
+</html>
 
 
