@@ -18,44 +18,118 @@
   </head>
   <body>
     <div class="container">
-	This is a calculator for BN(O) VISA to ... 
+      <h3>Instructions:</h3>
+      <p>Please enter the approval date and Leaving UK & Entering UK date below:</p>
       <form>
         <label for="approvalDate">Date 1:</label>
         <input type="date" id="approvalDate" name="approvalDate" class="date-input">
         <br>
 		<br>
 		<br>
-        <label for="date1a">Leaving UK Date1:</label>
+        <label for="date1a">Leaving UK Date 1:</label>
         <input type="date" id="date1a" name="date1a" class="date-input">
         <br>
-        <label for="date1b">Entering UK Date1:</label>
+        <label for="date1b">Entering UK Date 1:</label>
         <input type="date" id="date1b" name="date1b" class="date-input">
         <br>
-        <label for="date2a">Leaving UK date1a:</label>
+        <label for="date2a">Leaving UK date 2:</label>
         <input type="date" id="date2a" name="date2a" class="date-input">
         <br>
-        <label for="date2b">Entering UK date1a:</label>
+        <label for="date2b">Entering UK date 2:</label>
         <input type="date" id="date2b" name="date2b" class="date-input">
         <br>
-        <label for="date3a">Leaving UK date1b:</label>
+        <label for="date3a">Leaving UK date 3:</label>
         <input type="date" id="date3a" name="date3a" class="date-input">
         <br>
-        <label for="date3b">Entering UK date1b:</label>
+        <label for="date3b">Entering UK date 3:</label>
         <input type="date" id="date3b" name="date3b" class="date-input">
         <br>
-        <label for="date4a">Leaving UK Date4:</label>
+        <label for="date4a">Leaving UK Date 4:</label>
         <input type="date" id="date4a" name="date4a" class="date-input">
         <br>
-        <label for="date4b">Entering UK Date4:</label>
+        <label for="date4b">Entering UK Date 4:</label>
         <input type="date" id="date4b" name="date4b" class="date-input">
         <br>
-        <label for="date5a">Leaving UK Date4:</label>
+        <label for="date5a">Leaving UK Date 5:</label>
         <input type="date" id="date5a" name="date5a" class="date-input">
         <br>
-        <label for="date5b">Entering UK Date4:</label>
+        <label for="date5b">Entering UK Date 5:</label>
         <input type="date" id="date5b" name="date5b" class="date-input">
         <br>
 		</form>
+		<br>
+		<label for="output1">Output 1:</label>
+		<output id="output1"></output>
+		<br>
+		<label for="output2">Output 2:</label>
+		<output id="output2"></output>
     </div>
+	<script>
+      function calculateDaysOutsideUK(approvalDate, entryDates, exitDates) {
+        // code for calculating days outside UK
+		// Initialize the total days spent outside of the UK
+		let totalDays = 0;
+		let valid = true;
+		// Loop through each entry and exit date
+		for (let i = 0; i < entryDates.length; i++) {
+			// Calculate the number of days spent outside of the UK
+			let daysOutside = Math.round((exitDates[i] - entryDates[i]) / (1000 * 60 * 60 * 24));
+			// Check if the entry date is before the approval date
+			if (entryDates[i] < approvalDate) {
+			  // If so, subtract the number of days before the approval date
+			  daysOutside -= Math.round((entryDates[i] - approvalDate) / (1000 * 60 * 60 * 24));
+			}
+			// Add the number of days spent outside of the UK to the total
+			totalDays += daysOutside;
+
+			// check if the user is outside UK more than 180 days in any 12 consecutive months
+			let date = new Date(approvalDate);
+			date.setMonth(date.getMonth() + 12);
+			if(entryDates[i] < date){
+				if(totalDays > 180){
+					valid = false;
+					break;
+				}
+			}
+		}
+		// Return the total number of days spent outside of the UK
+		if(valid){
+			return totalDays;
+		} else {
+			return "Invalid: More than 180 days in any 12 consecutive months";
+			}
+		}
+      }
+      
+      function validateDaysOutsideUK(daysOutsideUK, approvalDate) {
+        // code for validating days outside UK
+		let twelveMonthsAgo = new Date(approvalDate);
+		twelveMonthsAgo.setMonth(approvalDate.getMonth() - 12);
+		if (approvalDate > twelveMonthsAgo) {
+			return daysOutsideUK > 180;
+		}
+			return false;
+      }
+      
+      function calculate() {
+        // Get the approval date, entry dates, and exit dates from the form
+        let approvalDate = new Date(document.querySelector("#approval-date").value);
+        let entryDates = [new Date(document.querySelector("#entry-date").value)];
+        let exitDates = [new Date(document.querySelector("#exit-date").value)];
+        
+        // Call the calculateDaysOutsideUK function
+        let result = calculateDaysOutsideUK(approvalDate, entryDates, exitDates);
+        
+        // Call the validateDaysOutsideUK function
+        let isValid = validateDaysOutsideUK(result, approvalDate);
+        
+        // Display the result
+        if (isValid) {
+          document.querySelector("#result").innerHTML = "Valid: You have spent more than 180 days outside UK in the last 12 months.";
+        } else {
+          document.querySelector("#result").innerHTML = "Invalid: You have not spent more than 180 days outside UK in the last 12 months.";
+        }
+      }
+    </script>
   </body>
 </html>
