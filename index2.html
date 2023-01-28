@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Days Outside UK Calculator</title>
+  </head>
+  <body>
+    <form>
+      <label for="approval-date">Approval Date:</label>
+      <input type="date" id="approval-date" name="approval-date"><br><br>
+      <label for="entry-date">Entry Date:</label>
+      <input type="date" id="entry-date" name="entry-date"><br><br>
+      <label for="exit-date">Exit Date:</label>
+      <input type="date" id="exit-date" name="exit-date"><br><br>
+      <button type="button" onclick="calculate()">Calculate</button>
+    </form>
+    <br>
+    <div id="result"></div>
+    <script>
+      function calculateDaysOutsideUK(approvalDate, entryDates, exitDates) {
+        // code for calculating days outside UK
+		// Initialize the total days spent outside of the UK
+		let totalDays = 0;
+		let valid = true;
+		// Loop through each entry and exit date
+		for (let i = 0; i < entryDates.length; i++) {
+			// Calculate the number of days spent outside of the UK
+			let daysOutside = Math.round((exitDates[i] - entryDates[i]) / (1000 * 60 * 60 * 24));
+			// Check if the entry date is before the approval date
+			if (entryDates[i] < approvalDate) {
+			  // If so, subtract the number of days before the approval date
+			  daysOutside -= Math.round((entryDates[i] - approvalDate) / (1000 * 60 * 60 * 24));
+			}
+			// Add the number of days spent outside of the UK to the total
+			totalDays += daysOutside;
+
+			// check if the user is outside UK more than 180 days in any 12 consecutive months
+			let date = new Date(approvalDate);
+			date.setMonth(date.getMonth() + 12);
+			if(entryDates[i] < date){
+				if(totalDays > 180){
+					valid = false;
+					break;
+				}
+			}
+		}
+		// Return the total number of days spent outside of the UK
+		if(valid){
+			return totalDays;
+		} else {
+			return "Invalid: More than 180 days in any 12 consecutive months";
+			}
+		}
+      }
+      
+      function validateDaysOutsideUK(daysOutsideUK, approvalDate) {
+        // code for validating days outside UK
+		let twelveMonthsAgo = new Date(approvalDate);
+		twelveMonthsAgo.setMonth(approvalDate.getMonth() - 12);
+		if (approvalDate > twelveMonthsAgo) {
+			return daysOutsideUK > 180;
+		}
+			return false;
+      }
+      
+      function calculate() {
+        // Get the approval date, entry dates, and exit dates from the form
+        let approvalDate = new Date(document.querySelector("#approval-date").value);
+        let entryDates = [new Date(document.querySelector("#entry-date").value)];
+        let exitDates = [new Date(document.querySelector("#exit-date").value)];
+        
+        // Call the calculateDaysOutsideUK function
+        let result = calculateDaysOutsideUK(approvalDate, entryDates, exitDates);
+        
+        // Call the validateDaysOutsideUK function
+        let isValid = validateDaysOutsideUK(result, approvalDate);
+        
+        // Display the result
+        if (isValid) {
+          document.querySelector("#result").innerHTML = "Valid: You have spent more than 180 days outside UK in the last 12 months.";
+        } else {
+          document.querySelector("#result").innerHTML = "Invalid: You have not spent more than 180 days outside UK in the last 12 months.";
+        }
+      }
+    </script>
+  </body>
+</html>
