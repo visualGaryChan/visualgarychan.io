@@ -44,7 +44,7 @@
       <label for="trip3-enter-date">Trip 3 Enter UK Date:</label>
       <input type="date" id="trip3-enter-date">
       <br><br>
-      <button type="button" onclick="calculateDaysOutsideUK()">Calculate</button>
+      <button id="generateBtn" type="button" onclick="calculateDaysOutsideUK()">Calculate</button>
     </form>
     <br>
     <h2>Results:</h2>
@@ -53,26 +53,37 @@
     <p id="trip2-result">Trip 2 full days Outside UK:</p>
     <p id="trip3-result">Trip 3 full days Outside UK:</p>
     <p id="total-result">Total full days Outside UK:</p>
-    <table id="table">
-      <tr>
-        <th></th>
-        <th>Jan</th>
-        <th>Feb</th>
-        <th>Mar</th>
-        <th>Apr</th>
-        <th>May</th>
-        <th>Jun</th>
-        <th>Jul</th>
-        <th>Aug</th>
-        <th>Sep</th>
-        <th>Oct</th>
-        <th>Nov</th>
-        <th>Dec</th>
-        <th>TOTAL</th>
-      </tr>
-    </table>
+    <div id="tableContainer">
+      <table id="holidayTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Jan</th>
+            <th>Feb</th>
+            <th>Mar</th>
+            <th>Apr</th>
+            <th>May</th>
+            <th>Jun</th>
+            <th>Jul</th>
+            <th>Aug</th>
+            <th>Sep</th>
+            <th>Oct</th>
+            <th>Nov</th>
+            <th>Dec</th>
+          </tr>
+        </thead>
+        <tbody id="holidayBody">
+          <!-- Generated table rows will be inserted here -->
+        </tbody>
+      </table>
+      <br>
+    </div>
 
     <script>
+      function isMonthEnd(date) {
+        return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
+      }
+
       function calculateDaysOutsideUK() {
         const approvalDate = new Date(document.querySelector("#approval-date").value);
         const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
@@ -83,28 +94,34 @@
         const trip3LeaveDate = new Date(document.querySelector("#trip3-leave-date").value);
         const trip3EnterDate = new Date(document.querySelector("#trip3-enter-date").value);
         const table = document.querySelector("#table");
-
+        
         let trip0DaysOutsideUK = 0;
         let trip1DaysOutsideUK = 0;
         let trip2DaysOutsideUK = 0;
         let trip3DaysOutsideUK = 0;
         let totalDaysOutsideUK = 0;
+        // creating two dimensional array
+        for (let i = 0; i < 6; i++) {
+            for(let j = 0; j < 12; j++) {
+                arr[i] = [];
+            }
+        }
 
         // calculation section
-        if (approvalDate && firstEnterDate) {
+        if (!isNaN(approvalDate) && !isNaN(firstEnterDate)) {
           trip0DaysOutsideUK = (firstEnterDate - approvalDate) / (1000 * 60 * 60 * 24) - 1;
         }
-        if (trip1LeaveDate && trip1EnterDate) {
+        if (!isNaN(trip1LeaveDate) && !isNaN(trip1EnterDate)) {
           trip1DaysOutsideUK = (trip1EnterDate - trip1LeaveDate) / (1000 * 60 * 60 * 24) - 1;
         }
-        if (trip2LeaveDate && trip2EnterDate) {
+        if (!isNaN(trip2LeaveDate) && !isNaN(trip2EnterDate)) {
           trip2DaysOutsideUK = (trip2EnterDate - trip2LeaveDate) / (1000 * 60 * 60 * 24) - 1;
         }
-        if (trip3LeaveDate && trip3EnterDate) {
+        if (!isNaN(trip3LeaveDate) && !isNaN(trip3EnterDate)) {
           alert("trip3EnterDate:" + trip3EnterDate);
           trip3DaysOutsideUK = (trip3EnterDate - trip3LeaveDate) / (1000 * 60 * 60 * 24) - 1;
         }
-        totalDaysOutsideUK = trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK;
+        totalDaysOutsideUK = trip0DaysOutsideUK + trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK;
      
         // output section
         document.querySelector("#trip0-result").innerHTML = `Full days outside UK before 1st entrance: ${trip0DaysOutsideUK}`;
@@ -113,31 +130,41 @@
         document.querySelector("#trip3-result").innerHTML = `Trip 3 full days Outside UK: ${trip3DaysOutsideUK}`;
         document.querySelector("#total-result").innerHTML = `Total full days Outside UK: ${totalDaysOutsideUK}`;
 
-        for (let j = 0; j < 6; j++) {
-          let year = approvalDate.getFullYear() + j;
-          let row = table.insertRow();
-          let yearCell = row.insertCell();
-          yearCell.innerHTML = year;
-
-          for (let i = 0; i < 12; i++) {
-            let month = approvalDate.getMonth() + i;
-            let date = new Date(year, month, 1);
-            let monthCell = row.insertCell();
-            if (trip1LeaveDate.getFullYear() == year && trip1LeaveDate.getMonth() == i){
-              if (trip1EnterDate.getFullYear() == year && trip1EnterDate.getMonth() == i){
-                monthCell.innerHTML = trip1DaysOutsideUK;
-              } else if (trip1EnterDate.getFullYear() == year){
-
-              }
-            }
-            // if (approvalDate.getMonth() > i ){
-            //   row.insertCell();
-            //   continue;
-            // }
-            //monthCell.innerHTML = date.toLocaleString('default', { month: 'long' });
-            //monthCell.innerHTML = i;
-          }
+        // table 
+        const start = trip1LeaveDate;
+        const end = trip1EnterDate;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let holidayDays = {};
+        
+        for (let m = start.getMonth(); m <= end.getMonth(); m++) {
+          const year = m === start.getMonth() ? start.getFullYear() : (m === end.getMonth() ? end.getFullYear() : start.getFullYear());
+          const firstDay = new Date(year, m, 1);
+          const lastDay = new Date(year, m + 1, 0);
+          const daysInMonth = lastDay.getDate();
+          
+          holidayDays[year] = holidayDays[year] || {};
+          holidayDays[year][monthNames[m]] = (m === start.getMonth() ? Math.min(daysInMonth, end.getDate()) - start.getDate() + 1 :
+            (m === end.getMonth() ? end.getDate() - 1 : daysInMonth)) +
+            (m > start.getMonth() && m < end.getMonth() ? daysInMonth : 0);
         }
+        
+        let tbody = document.getElementById("holidayBody");
+        tbody.innerHTML = "";
+        for (const year in holidayDays) {
+          let tr = document.createElement("tr");
+          let yearTd = document.createElement("td");
+          yearTd.innerHTML = year;
+          tr.appendChild(yearTd);
+          
+          for (const month of monthNames) {
+            let monthTd = document.createElement("td");
+            monthTd.innerHTML = holidayDays[year][month] || 0;
+            tr.appendChild(monthTd);
+          }
+          
+          tbody.appendChild(tr);
+        };
+
       }
     </script>
   </body>

@@ -1,64 +1,112 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>BNO VISA outside UK days calculator</title>
-  <script>
-    function generateDates() {
-      var numTrips = document.getElementById("numTrips").value;
-      var container = document.getElementById("datesContainer");
-      container.innerHTML = "";
-      for (var i = 0; i < numTrips; i++) {
-        container.innerHTML += "Leaving Date " + (i + 1) + ": <input type='date'><br>";
-        container.innerHTML += "Entering Date " + (i + 1) + ": <input type='date'><br><br>";
+  <head>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
       }
-    }
-	function get12MonthsBefore(date) {
-	  var twelveMonthsBefore = new Date();
-	  twelveMonthsBefore.setFullYear(date.getFullYear() - 1, date.getMonth(), date.getDate());
-	  return twelveMonthsBefore;
-	}
-    function checkDates() {
-      var bnoApprovalDate = new Date(document.getElementById("bnoApprovalDate").value);
-      var datesContainer = document.getElementById("datesContainer");
-      var leaveDates = datesContainer.getElementsByClassName("leaveDate");
-      var enterDates = datesContainer.getElementsByClassName("enterDate");
-      var outsideUK = 0;
-      var valid = true;
-      var rolling12months = new Date(bnoApprovalDate.getFullYear(), bnoApprovalDate.getMonth() + 12, bnoApprovalDate.getDate());
-      for (var i = 0; i < leaveDates.length; i++) {
-        var leaveDate = new Date(leaveDates[i].value);
-        var enterDate = new Date(enterDates[i].value);
-        if (enterDate < leaveDate) {
-          alert("Entering date must not be earlier than leaving date for trip " + (i + 1));
-          valid = false;
-          break;
-        }
-		//get12MonthsBefore(leaveDate
-        if (leaveDate >= bnoApprovalDate && leaveDate <= rolling12months) {
-          outsideUK += (leaveDate - enterDate) / (1000 * 60 * 60 * 24);
-		  alert(outsideUK);
-        }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
       }
-      if (valid) {
-        if (outsideUK > 180) {
-          alert("YES You have exceeded 180 days outside of the UK in the last 12 months");
-        } else {
-          alert("NO You have not exceeded 180 days outside of the UK in the last 12 months");
-        }
+      th {
+        background-color: lightgray;
       }
-    }
-  </script>
-</head>
-<body>
-  <h1>BNO VISA outside UK days calculator</h1>
-  <label for="bnoApprovalDate">BNO VISA Approval Date:</label>
-  <input type="date" id="bnoApprovalDate"><br><br>
-  <label for="numTrips">Number of Trips:</label>
-  <input type="number" id="numTrips"><br><br>
-  <button onclick="generateDates()">Generate Dates</button>
-  <br><br>
-  <div id="datesContainer"></div>
-  <br><br>
-  <button onclick="checkDates()">Check Dates</button>
-</body>
+    </style>
+    <title>BNO VISA outside UK days calculator</title>
+  </head>
+  <body>
+    <h1>BNO VISA outside UK days calculator</h1>
+    <form>
+      <label for="approval-date">BNO VISA Approval Date:</label>
+      <input type="date" id="approval-date" required>
+      <br><br>
+      <label for="first-enter-date">First Time Enter UK Date:</label>
+      <input type="date" id="first-enter-date" required>
+      <br><br>
+      <label for="trip1-leave-date">Trip 1 Leave UK Date:</label>
+      <input type="date" id="trip1-leave-date">
+      <br><br>
+      <label for="trip1-enter-date">Trip 1 Enter UK Date:</label>
+      <input type="date" id="trip1-enter-date">
+      <br><br>
+      <label for="trip2-leave-date">Trip 2 Leave UK Date:</label>
+      <input type="date" id="trip2-leave-date">
+      <br><br>
+      <label for="trip2-enter-date">Trip 2 Enter UK Date:</label>
+      <input type="date" id="trip2-enter-date">
+      <br><br>
+      <label for="trip3-leave-date">Trip 3 Leave UK Date:</label>
+      <input type="date" id="trip3-leave-date">
+      <br><br>
+      <label for="trip3-enter-date">Trip 3 Enter UK Date:</label>
+      <input type="date" id="trip3-enter-date">
+      <br><br>
+      <button id="generateBtn" type="button" onclick="calculateDaysOutsideUK()">Calculate</button>
+    </form>
+    <br>
+    <h2>Results:</h2>
+    <p id="trip0-result">Full days outside UK before 1st entrance:</p>
+    <p id="trip1-result">Trip 1 full days Outside UK:</p>
+    <p id="trip2-result">Trip 2 full days Outside UK:</p>
+    <p id="trip3-result">Trip 3 full days Outside UK:</p>
+    <p id="total-result">Total full days Outside UK:</p>
+    <p id="stayMorethan180-result">No more than 180 days outside UK:</p>
+
+    <script>
+      function calculateDaysOutsideUK() {
+        const approvalDate = new Date(document.querySelector("#approval-date").value);
+        const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
+        const trip1LeaveDate = new Date(document.querySelector("#trip1-leave-date").value);
+        const trip1EnterDate = new Date(document.querySelector("#trip1-enter-date").value);
+        const trip2LeaveDate = new Date(document.querySelector("#trip2-leave-date").value);
+        const trip2EnterDate = new Date(document.querySelector("#trip2-enter-date").value);
+        const trip3LeaveDate = new Date(document.querySelector("#trip3-leave-date").value);
+        const trip3EnterDate = new Date(document.querySelector("#trip3-enter-date").value);
+        const table = document.querySelector("#table");
+
+        let trip0DaysOutsideUK = 0;
+        let trip1DaysOutsideUK = 0;
+        let trip2DaysOutsideUK = 0;
+        let trip3DaysOutsideUK = 0;
+        let totalDaysOutsideUK = 0;
+        let stayMoreThan180 = true;
+
+        // calculation section
+        if (!isNaN(approvalDate) && !isNaN(firstEnterDate)) {
+          trip0DaysOutsideUK = (firstEnterDate - approvalDate) / (1000 * 60 * 60 * 24) - 1;
+        }
+        if (!isNaN(trip1LeaveDate) && !isNaN(trip1EnterDate)) {
+          trip1DaysOutsideUK = (trip1EnterDate - trip1LeaveDate) / (1000 * 60 * 60 * 24) - 1;
+        }
+        if (!isNaN(trip2LeaveDate) && !isNaN(trip2EnterDate)) {
+          trip2DaysOutsideUK = (trip2EnterDate - trip2LeaveDate) / (1000 * 60 * 60 * 24) - 1;
+        }
+        if (!isNaN(trip3LeaveDate) && !isNaN(trip3EnterDate)) {
+          alert("trip3EnterDate:" + trip3EnterDate);
+          trip3DaysOutsideUK = (trip3EnterDate - trip3LeaveDate) / (1000 * 60 * 60 * 24) - 1;
+        }
+        totalDaysOutsideUK = trip0DaysOutsideUK + trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK;
+     
+        if (trip0DaysOutsideUK > 180){
+          stayMoreThan180 = false;
+        }
+
+        if (!isNaN(trip1EnterDate)){
+        }
+
+
+        // output section
+        document.querySelector("#trip0-result").innerHTML = `Full days outside UK before 1st entrance: ${trip0DaysOutsideUK}`;
+        document.querySelector("#trip1-result").innerHTML = `Trip 1 full days Outside UK: ${trip1DaysOutsideUK}`;
+        document.querySelector("#trip2-result").innerHTML = `Trip 2 full days Outside UK: ${trip2DaysOutsideUK}`;
+        document.querySelector("#trip3-result").innerHTML = `Trip 3 full days Outside UK: ${trip3DaysOutsideUK}`;
+        document.querySelector("#total-result").innerHTML = `Total full days Outside UK: ${totalDaysOutsideUK}`;
+        document.querySelector("#stayMorethan180-result").innerHTML = `No more than 180 days outside UK: ${stayMoreThan180}`;
+
+      }
+    </script>
+  </body>
 </html>
