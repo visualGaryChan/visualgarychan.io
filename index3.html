@@ -155,14 +155,20 @@
           array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += trip1DaysOutsideUK
         };
         // over month a: 2 months
-        if (start.getFullYear() == end.getFullYear() && start.getMonth() < end.getMonth()){
-          monthEndDate = new Date(trip1EnterDate.getFullYear(), trip1EnterDate.getMonth() + 1, 0);
-          temp = monthEndDate.getDate() - trip1LeaveDate.getDate();
-          array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
-          array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+2] += trip1EnterDate.getDate() - 1;
+        if (start.getFullYear() == end.getFullYear()){
+          if (start.getMonth() == end.getMonth()-1){
+            monthEndDate = new Date(trip1EnterDate.getFullYear(), trip1EnterDate.getMonth() + 1, 0);
+            temp = monthEndDate.getDate() - trip1LeaveDate.getDate();
+            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
+            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+2] += trip1EnterDate.getDate() - 1;
+          }
+          else
+          // over month b: more than 2 months
+          {
+            
+          }
         };
-        // over month b: more than 2 months
-        
+
         // over year
 
         let table = "<table>";
