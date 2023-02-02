@@ -83,14 +83,53 @@
       // for testing
       document.getElementById("approval-date").defaultValue = "2022-01-02";
       document.getElementById("first-enter-date").defaultValue = "2022-01-10";
-      document.getElementById("trip1-leave-date").defaultValue = "2022-03-20";
-      document.getElementById("trip1-enter-date").defaultValue = "2022-04-20";
+      document.getElementById("trip1-leave-date").defaultValue = "2022-01-20";
+      document.getElementById("trip1-enter-date").defaultValue = "2022-06-20";
+      document.getElementById("trip2-leave-date").defaultValue = "2022-12-20";
+      document.getElementById("trip2-enter-date").defaultValue = "2023-02-20";
+      document.getElementById("trip3-leave-date").defaultValue = "2023-03-20";
+      document.getElementById("trip3-enter-date").defaultValue = "2023-06-20";
 
       let array = [];
       function isMonthEnd(date) {
         return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
       }
-
+      function calculateDaysOutsideUKEachTrip(approvalDate, start, end){
+        // same day in and out
+        if (start == end){
+          return;
+        }
+        // same month in and out
+        if (start.getFullYear() == end.getFullYear() && start.getMonth() == end.getMonth()){
+          array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += (end - start) / (1000 * 60 * 60 * 24) - 1;
+        } else {
+          // over month
+          if (start.getFullYear() == end.getFullYear()){
+            monthEndDate = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+            var temp = monthEndDate.getDate() - start.getDate();
+            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
+            for (let i = start.getMonth()+1 ; i < end.getMonth(); i++) {
+              monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
+              array[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
+            }
+            array[start.getFullYear()-approvalDate.getFullYear()][end.getMonth()+1] += end.getDate() - 1;
+          } else {
+          // over year
+            monthEndDate = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+            var temp = monthEndDate.getDate() - start.getDate();
+            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
+            for (let i = start.getMonth()+1 ; i < 12; i++) {
+              monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
+              array[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
+            }
+            for (let i = 0 ; i < end.getMonth(); i++) {
+              monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
+              array[start.getFullYear()-approvalDate.getFullYear()+1][i+1] += monthEndDate;
+            } 
+            array[start.getFullYear()-approvalDate.getFullYear()+1][end.getMonth()+1] += end.getDate() - 1;
+          }
+        }
+      }
       function calculateDaysOutsideUK() {
         const approvalDate = new Date(document.querySelector("#approval-date").value);
         const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
@@ -121,7 +160,7 @@
             }
           }
         } 
-
+        // handle same day in out
         // calculation section
         if (!isNaN(approvalDate) && !isNaN(firstEnterDate)) {
           trip0DaysOutsideUK = (firstEnterDate - approvalDate) / (1000 * 60 * 60 * 24) - 1;
@@ -145,31 +184,12 @@
         document.querySelector("#total-result").innerHTML = `Total full days Outside UK: ${totalDaysOutsideUK}`;
 
         // table 
-        const start = trip1LeaveDate;
-        const end = trip1EnterDate;
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let holidayDays = {};
-        
-        // same month in and out
-        if (start.getFullYear() == end.getFullYear() && start.getMonth() == end.getMonth()){
-          array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += trip1DaysOutsideUK
-        };
-        // over month a: 2 months
-        if (start.getFullYear() == end.getFullYear()){
-          if (start.getMonth() == end.getMonth()-1){
-            monthEndDate = new Date(trip1EnterDate.getFullYear(), trip1EnterDate.getMonth() + 1, 0);
-            temp = monthEndDate.getDate() - trip1LeaveDate.getDate();
-            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
-            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+2] += trip1EnterDate.getDate() - 1;
-          }
-          else
-          // over month b: more than 2 months
-          {
-            
-          }
-        };
-
-        // over year
+        calculateDaysOutsideUKEachTrip(approvalDate, approvalDate, firstEnterDate);
+        calculateDaysOutsideUKEachTrip(approvalDate, trip1LeaveDate, trip1EnterDate);
+        calculateDaysOutsideUKEachTrip(approvalDate, trip2LeaveDate, trip2EnterDate);
+        calculateDaysOutsideUKEachTrip(approvalDate, trip3LeaveDate, trip3EnterDate);
 
         let table = "<table>";
         for (let i = 0; i < array.length; i++) {
