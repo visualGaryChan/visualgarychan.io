@@ -44,7 +44,7 @@
       <label for="trip3-enter-date">Trip 3 Enter UK Date:</label>
       <input type="date" id="trip3-enter-date">
       <br><br>
-      <button id="generateBtn" type="button" onclick="calculateDaysOutsideUK()">Calculate</button>
+      <button id="generateBtn" type="button" onclick="calculate()">Calculate</button>
     </form>
     <br>
     <h2>Results:</h2>
@@ -88,49 +88,67 @@
       document.getElementById("trip2-leave-date").defaultValue = "2022-12-20";
       document.getElementById("trip2-enter-date").defaultValue = "2023-02-20";
       document.getElementById("trip3-leave-date").defaultValue = "2023-03-20";
-      document.getElementById("trip3-enter-date").defaultValue = "2023-06-20";
+      document.getElementById("trip3-enter-date").defaultValue = "2023-03-20";
 
-      let array = [];
+      let arr2d = [];
       function isMonthEnd(date) {
         return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
       }
-      function calculateDaysOutsideUKEachTrip(approvalDate, start, end){
+      function calculateDaysOutsideUKByTrip(mode, start, end) {
+        if (isNaN(start) || isNaN(end)) {
+          return 0;
+        }
+        if (mode === 1) {
+          // Trip mode
+          if (start > end) {
+            alert("Enter date must not be earlier than Leave date.");
+            return 0;
+          }
+          const days = (end - start) / (1000 * 60 * 60 * 24) - 1;
+          return (start.getTime() == end.getTime()) ? 0 : days;
+        }
+        // First enter mode
+        const days = (end - start) / (1000 * 60 * 60 * 24);
+        return (start == end) ? 0 : days;
+      }
+
+      function countOutsideUKDaysEachTrip(approvalDate, start, end){
         // same day in and out
-        if (start == end){
+        if (start.getTime() == end.getTime() || isNaN(start) || isNaN(end)){
           return;
         }
         // same month in and out
         if (start.getFullYear() == end.getFullYear() && start.getMonth() == end.getMonth()){
-          array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += (end - start) / (1000 * 60 * 60 * 24) - 1;
+          arr2d[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += (end - start) / (1000 * 60 * 60 * 24) - 1;
         } else {
           // over month
           if (start.getFullYear() == end.getFullYear()){
             monthEndDate = new Date(start.getFullYear(), start.getMonth() + 1, 0);
             var temp = monthEndDate.getDate() - start.getDate();
-            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
+            arr2d[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
             for (let i = start.getMonth()+1 ; i < end.getMonth(); i++) {
               monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
-              array[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
+              arr2d[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
             }
-            array[start.getFullYear()-approvalDate.getFullYear()][end.getMonth()+1] += end.getDate() - 1;
+            arr2d[start.getFullYear()-approvalDate.getFullYear()][end.getMonth()+1] += end.getDate() - 1;
           } else {
           // over year
             monthEndDate = new Date(start.getFullYear(), start.getMonth() + 1, 0);
             var temp = monthEndDate.getDate() - start.getDate();
-            array[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
+            arr2d[start.getFullYear()-approvalDate.getFullYear()][start.getMonth()+1] += temp;
             for (let i = start.getMonth()+1 ; i < 12; i++) {
               monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
-              array[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
+              arr2d[start.getFullYear()-approvalDate.getFullYear()][i+1] += monthEndDate;
             }
             for (let i = 0 ; i < end.getMonth(); i++) {
               monthEndDate = new Date(start.getFullYear(), i+1, 0).getDate();
-              array[start.getFullYear()-approvalDate.getFullYear()+1][i+1] += monthEndDate;
+              arr2d[start.getFullYear()-approvalDate.getFullYear()+1][i+1] += monthEndDate;
             } 
-            array[start.getFullYear()-approvalDate.getFullYear()+1][end.getMonth()+1] += end.getDate() - 1;
+            arr2d[start.getFullYear()-approvalDate.getFullYear()+1][end.getMonth()+1] += end.getDate() - 1;
           }
         }
       }
-      function calculateDaysOutsideUK() {
+      function calculate() {
         const approvalDate = new Date(document.querySelector("#approval-date").value);
         const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
         const trip1LeaveDate = new Date(document.querySelector("#trip1-leave-date").value);
@@ -149,31 +167,23 @@
         // creating two dimensional array
         for (let i = 0; i < 6; i++) {
           for(let j = 0; j < 13; j++) {
-            array[i] = [];
+            arr2d[i] = [];
           }
         }
         for (let i = 0; i < 6; i++) {
           for(let j = 0; j < 13; j++) {
-            array[i][j] = 0;
+            arr2d[i][j] = 0;
             if (j == 0){
-              array[i][j] = approvalDate.getFullYear() + i;
+              arr2d[i][j] = approvalDate.getFullYear() + i;
             }
           }
         } 
-        // handle same day in out
+
         // calculation section
-        if (!isNaN(approvalDate) && !isNaN(firstEnterDate)) {
-          trip0DaysOutsideUK = (firstEnterDate - approvalDate) / (1000 * 60 * 60 * 24) - 1;
-        }
-        if (!isNaN(trip1LeaveDate) && !isNaN(trip1EnterDate)) {
-          trip1DaysOutsideUK = (trip1EnterDate - trip1LeaveDate) / (1000 * 60 * 60 * 24) - 1;
-        }
-        if (!isNaN(trip2LeaveDate) && !isNaN(trip2EnterDate)) {
-          trip2DaysOutsideUK = (trip2EnterDate - trip2LeaveDate) / (1000 * 60 * 60 * 24) - 1;
-        }
-        if (!isNaN(trip3LeaveDate) && !isNaN(trip3EnterDate)) {
-          trip3DaysOutsideUK = (trip3EnterDate - trip3LeaveDate) / (1000 * 60 * 60 * 24) - 1;
-        }
+        trip0DaysOutsideUK = calculateDaysOutsideUKByTrip(0, approvalDate, firstEnterDate);
+        trip1DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip1LeaveDate, trip1EnterDate);
+        trip2DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip2LeaveDate, trip2EnterDate);
+        trip3DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip3LeaveDate, trip3EnterDate);
         totalDaysOutsideUK = trip0DaysOutsideUK + trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK;
      
         // output section
@@ -186,16 +196,26 @@
         // table 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let holidayDays = {};
-        calculateDaysOutsideUKEachTrip(approvalDate, approvalDate, firstEnterDate);
-        calculateDaysOutsideUKEachTrip(approvalDate, trip1LeaveDate, trip1EnterDate);
-        calculateDaysOutsideUKEachTrip(approvalDate, trip2LeaveDate, trip2EnterDate);
-        calculateDaysOutsideUKEachTrip(approvalDate, trip3LeaveDate, trip3EnterDate);
+        countOutsideUKDaysEachTrip(approvalDate, approvalDate, firstEnterDate);
+        countOutsideUKDaysEachTrip(approvalDate, trip1LeaveDate, trip1EnterDate);
+        countOutsideUKDaysEachTrip(approvalDate, trip2LeaveDate, trip2EnterDate);
+        countOutsideUKDaysEachTrip(approvalDate, trip3LeaveDate, trip3EnterDate);
+
+        // counting in rolling 12 months
+        const arr1d = arr2d.reduce((acc, cur) => acc.concat(cur), []);
+        let daySum = 0;
+        for (let k = 0 ; k < arr1d.length ; k++){
+          if ((parseInt(arr1d[k])) <= 31){
+            daySum += parseInt(arr1d[k]);
+          }
+        }
+        alert("daySum:"+daySum);
 
         let table = "<table>";
-        for (let i = 0; i < array.length; i++) {
+        for (let i = 0; i < arr2d.length; i++) {
           table += "<tr>";
-          for (let j = 0; j < array[i].length; j++) {
-            table += "<td>" + array[i][j] + "</td>";
+          for (let j = 0; j < arr2d[i].length; j++) {
+            table += "<td>" + arr2d[i][j] + "</td>";
           }
           table += "</tr>";
         }
