@@ -204,12 +204,20 @@
         // counting in rolling 12 months
         const arr1d = arr2d.reduce((acc, cur) => acc.concat(cur), []);
         let daySum = 0;
-        for (let k = 0 ; k < arr1d.length ; k++){
-          if ((parseInt(arr1d[k])) <= 31){
-            daySum += parseInt(arr1d[k]);
+        let k = 0 ;
+        for (k = 0 ; k < arr1d.length-12 ; k++){
+          daySum = 0;
+          for (let q = k ; q < 12 ; q++){
+            if ((parseInt(arr1d[q])) <= 31){
+              daySum += parseInt(arr1d[q]);
+            }
+          }
+          if (daySum > 180){
+            alert("Exceed 180 days from: " + k);
+            alert("daySum:"+daySum);
+            break;
           }
         }
-        alert("daySum:"+daySum);
 
         let table = "<table>";
         for (let i = 0; i < arr2d.length; i++) {
