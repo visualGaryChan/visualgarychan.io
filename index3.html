@@ -12,7 +12,7 @@
         text-align: center;
       }
       th {
-        background-color: lightgray;
+        background-color: rgb(244, 237, 225);
       }
     </style>
     <title>BNO VISA outside UK days calculator</title>
@@ -22,7 +22,7 @@
     <form>
       <table id="inputTable">
       <tr>
-        <td rowspan="7" bgcolor="grey" width="40%">
+        <td rowspan="7" bgcolor="wheat" width="40%">
           <h1>Instruction:</h1>
           <h3>
           - Must enter the BNO VISA approval Date. <br><br>
@@ -123,18 +123,45 @@
       </table>
 </form>
 
+<div id="resultContainer" style="display: None">
     <br>
-    <h2>Results:</h2>
-    <p id="trip0-result">Full days outside UK before 1st entrance:</p>
-    <p id="trip1-result">Trip 1 full days Outside UK:</p>
-    <p id="trip2-result">Trip 2 full days Outside UK:</p>
-    <p id="trip3-result">Trip 3 full days Outside UK:</p>
-    <p id="trip4-result">Trip 4 full days Outside UK:</p>
-    <p id="trip5-result">Trip 5 full days Outside UK:</p>
-    <p id="trip6-result">Trip 6 full days Outside UK:</p>
-    <p id="trip7-result">Trip 7 full days Outside UK:</p>
-    <p id="trip8-result">Trip 8 full days Outside UK:</p>
-    <p id="total-result">Total full days Outside UK:</p>
+    <h1>Results:</h1>
+    <p id="DayCountConclusion"></p>
+    <div>
+      <table id="tripTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Before 1st entrance</th>
+            <th>Trip 1</th>
+            <th>Trip 2</th>
+            <th>Trip 3</th>
+            <th>Trip 4</th>
+            <th>Trip 5</th>
+            <th>Trip 6</th>
+            <th>Trip 7</th>
+            <th>Trip 8</th>
+            <th>TOTAL</th>
+          </tr>
+        </thead>
+        <tbody id="tripTableBody">
+          <tr>
+            <th width="400">No. of full days outside UK</th>
+            <th style="background-color: white" id="trip0-result">0</th>
+            <th style="background-color: white" id="trip1-result"></th>
+            <th style="background-color: white" id="trip2-result"></th>
+            <th style="background-color: white" id="trip3-result"></th>
+            <th style="background-color: white" id="trip4-result"></th>
+            <th style="background-color: white" id="trip5-result"></th>
+            <th style="background-color: white" id="trip6-result"></th>
+            <th style="background-color: white" id="trip7-result"></th>
+            <th style="background-color: white" id="trip8-result"></th>
+            <th style="background-color: rgb(244, 237, 225)wheat" id="total-result"></th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br>
     <div id="tableContainer">
       <table id="countDayTable">
         <thead id="tableHead">
@@ -160,12 +187,13 @@
       </table>
       <br>
     </div>
-    <p id="results"></p>
+</div>
 
     <script>
+      
       // for testing
       document.getElementById("approval-date").defaultValue = "2021-05-27";
-      document.getElementById("first-enter-date").defaultValue = "2021-07-16";
+      document.getElementById("first-enter-date").defaultValue = "2021-01-16";
       document.getElementById("trip1-leave-date").defaultValue = "2022-06-03";
       document.getElementById("trip1-enter-date").defaultValue = "2022-11-25";
       document.getElementById("trip2-leave-date").defaultValue = "2023-08-03";
@@ -183,23 +211,23 @@
         if (isNaN(start) || isNaN(end)) {
           return 0;
         }
-        if (mode === 1) {
+        if (mode == 1) {
           // Trip mode
           if (start > end) {
             alert("Enter date must not be earlier than Leave date.");
-            return 0;
+            throw new Error ("Enter date must not be earlier than Leave date.");
           }
           const days = (end - start) / (1000 * 60 * 60 * 24) - 1;
           return (start.getTime() == end.getTime()) ? 0 : days;
         }
         // First enter mode
         const days = (end - start) / (1000 * 60 * 60 * 24);
-        return (start == end) ? 0 : days;
+        return (start >= end) ? 0 : days;
       }
 
       function countOutsideUKDaysInMonths(approvalDate, start, end){
         // same day in and out
-        if (start.getTime() == end.getTime() || isNaN(start) || isNaN(end)){
+        if (start.getTime() >= end.getTime() || isNaN(start) || isNaN(end)){
           return;
         }
         // same month in and out
@@ -233,6 +261,7 @@
           }
         }
       }
+
       function calculate() {
         let tableContainer = document.getElementById("tableBody");
         tableContainer.innerHTML = "";
@@ -296,16 +325,16 @@
         totalDaysOutsideUK += trip5DaysOutsideUK + trip6DaysOutsideUK + trip7DaysOutsideUK + trip8DaysOutsideUK;
      
         // output section
-        document.querySelector("#trip0-result").innerHTML = `Full days outside UK before 1st entrance: ${trip0DaysOutsideUK}`;
-        document.querySelector("#trip1-result").innerHTML = `Trip 1 full days Outside UK: ${trip1DaysOutsideUK}`;
-        document.querySelector("#trip2-result").innerHTML = `Trip 2 full days Outside UK: ${trip2DaysOutsideUK}`;
-        document.querySelector("#trip3-result").innerHTML = `Trip 3 full days Outside UK: ${trip3DaysOutsideUK}`;
-        document.querySelector("#trip4-result").innerHTML = `Trip 4 full days Outside UK: ${trip4DaysOutsideUK}`;
-        document.querySelector("#trip5-result").innerHTML = `Trip 5 full days Outside UK: ${trip5DaysOutsideUK}`;
-        document.querySelector("#trip6-result").innerHTML = `Trip 6 full days Outside UK: ${trip6DaysOutsideUK}`;
-        document.querySelector("#trip7-result").innerHTML = `Trip 7 full days Outside UK: ${trip7DaysOutsideUK}`;
-        document.querySelector("#trip8-result").innerHTML = `Trip 8 full days Outside UK: ${trip8DaysOutsideUK}`;
-        document.querySelector("#total-result").innerHTML = `Total full days Outside UK: ${totalDaysOutsideUK}`;
+        document.querySelector("#trip0-result").innerHTML = trip0DaysOutsideUK;
+        document.querySelector("#trip1-result").innerHTML = trip1DaysOutsideUK;
+        document.querySelector("#trip2-result").innerHTML = trip2DaysOutsideUK;
+        document.querySelector("#trip3-result").innerHTML = trip3DaysOutsideUK;
+        document.querySelector("#trip4-result").innerHTML = trip4DaysOutsideUK;
+        document.querySelector("#trip5-result").innerHTML = trip5DaysOutsideUK;
+        document.querySelector("#trip6-result").innerHTML = trip6DaysOutsideUK;
+        document.querySelector("#trip7-result").innerHTML = trip7DaysOutsideUK;
+        document.querySelector("#trip8-result").innerHTML = trip8DaysOutsideUK;
+        document.querySelector("#total-result").innerHTML = totalDaysOutsideUK;
 
         // table 
         let holidayDays = {};
@@ -366,9 +395,20 @@
           
           tableContainer.appendChild(rowElement);
         }
-      }
-      document.querySelector("#results").innerHTML = `123123:`;
 
+        // print out conclusion
+        if (daySum > 180){
+          document.querySelector("#DayCountConclusion").innerHTML = `<h2>Unfortunately, you have over 180 days outside UK rule in the below highlight period.</h2>`;
+        } else {
+          if (totalDaysOutsideUK > 450){
+            document.querySelector("#DayCountConclusion").innerHTML = `<h2>Unfortunately, you have exceeded the 450 days outside UK rule over 5 years.</h2>`;
+          } else {
+            document.querySelector("#DayCountConclusion").innerHTML = `<h2>Congratulations! You didn't not exceed the allowed days of outside UK days for now.</h2>`;
+          }
+        }
+        
+        document.querySelector("#resultContainer").style.display = "block";
+      }
     </script>
   </body>
 </html>
