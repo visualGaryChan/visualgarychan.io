@@ -31,16 +31,16 @@
           - To be added.<br><br>
           </h3>
         </td>
-        <th>
+        <th colspan="2">
           <label for="approval-date">BNO VISA approval Date:</label>
           <input type="date" id="approval-date" required>
         </th>
       </tr>
       <tr>
-        <th><br>
+        <th colspan="2">
           <label for="first-enter-date">First time enter UK Date:</label>
           <input type="date" id="first-enter-date" required>
-          <br><br>
+          <br>
         </th>
       </tr>
       <tr>
@@ -50,6 +50,14 @@
           <br><br>
           <label for="trip1-enter-date">Trip 1 Enter UK Date:</label>
           <input type="date" id="trip1-enter-date">
+          <br>
+        </th>
+        <th>
+          <label for="trip5-leave-date">Trip 5 Leave UK Date:</label>
+          <input type="date" id="trip5-leave-date">
+          <br><br>
+          <label for="trip5-enter-date">Trip 5 Enter UK Date:</label>
+          <input type="date" id="trip5-enter-date">
           <br>
         </th>
       </tr>
@@ -62,6 +70,14 @@
           <input type="date" id="trip2-enter-date">
           <br>
         </th>
+        <th>
+          <label for="trip6-leave-date">Trip 6 Leave UK Date:</label>
+          <input type="date" id="trip6-leave-date">
+          <br><br>
+          <label for="trip6-enter-date">Trip 6 Enter UK Date:</label>
+          <input type="date" id="trip6-enter-date">
+          <br>
+        </th>
       </tr>
       <tr>
         <th>
@@ -72,9 +88,35 @@
           <input type="date" id="trip3-enter-date">
           <br>
         </th>
+        <th>
+          <label for="trip7-leave-date">Trip 7 Leave UK Date:</label>
+          <input type="date" id="trip7-leave-date">
+          <br><br>
+          <label for="trip7-enter-date">Trip 7 Enter UK Date:</label>
+          <input type="date" id="trip7-enter-date">
+          <br>
+        </th>
       </tr>
       <tr>
         <th>
+          <label for="trip3-leave-date">Trip 3 Leave UK Date:</label>
+          <input type="date" id="trip4-leave-date">
+          <br><br>
+          <label for="trip3-enter-date">Trip 3 Enter UK Date:</label>
+          <input type="date" id="trip4-enter-date">
+          <br>
+        </th>
+        <th>
+          <label for="trip8-leave-date">Trip 8 Leave UK Date:</label>
+          <input type="date" id="trip8-leave-date">
+          <br><br>
+          <label for="trip8-enter-date">Trip 8 Enter UK Date:</label>
+          <input type="date" id="trip8-enter-date">
+          <br>
+        </th>
+      </tr>
+      <tr>
+        <th colspan="2">
           <button id="generateBtn" type="button" onclick="calculate()">Calculate</button>
         </th>
       </tr>
@@ -87,11 +129,17 @@
     <p id="trip1-result">Trip 1 full days Outside UK:</p>
     <p id="trip2-result">Trip 2 full days Outside UK:</p>
     <p id="trip3-result">Trip 3 full days Outside UK:</p>
+    <p id="trip4-result">Trip 4 full days Outside UK:</p>
+    <p id="trip5-result">Trip 5 full days Outside UK:</p>
+    <p id="trip6-result">Trip 6 full days Outside UK:</p>
+    <p id="trip7-result">Trip 7 full days Outside UK:</p>
+    <p id="trip8-result">Trip 8 full days Outside UK:</p>
     <p id="total-result">Total full days Outside UK:</p>
     <div id="tableContainer">
       <table id="countDayTable">
-        <thead>
+        <thead id="tableHead">
           <tr>
+            <th></th>
             <th>Jan</th>
             <th>Feb</th>
             <th>Mar</th>
@@ -112,17 +160,18 @@
       </table>
       <br>
     </div>
+    <p id="results"></p>
 
     <script>
       // for testing
-      document.getElementById("approval-date").defaultValue = "2022-01-02";
-      document.getElementById("first-enter-date").defaultValue = "2022-01-10";
-      document.getElementById("trip1-leave-date").defaultValue = "2022-03-15";
-      document.getElementById("trip1-enter-date").defaultValue = "2022-03-18";
-      document.getElementById("trip2-leave-date").defaultValue = "2022-09-03";
-      document.getElementById("trip2-enter-date").defaultValue = "2023-05-05";
-      document.getElementById("trip3-leave-date").defaultValue = "2023-07-20";
-      document.getElementById("trip3-enter-date").defaultValue = "2023-07-25";
+      document.getElementById("approval-date").defaultValue = "2021-05-27";
+      document.getElementById("first-enter-date").defaultValue = "2021-07-16";
+      document.getElementById("trip1-leave-date").defaultValue = "2022-06-03";
+      document.getElementById("trip1-enter-date").defaultValue = "2022-11-25";
+      document.getElementById("trip2-leave-date").defaultValue = "2023-08-03";
+      document.getElementById("trip2-enter-date").defaultValue = "2024-03-05";
+      // document.getElementById("trip3-leave-date").defaultValue = "2023-07-20";
+      // document.getElementById("trip3-enter-date").defaultValue = "2023-07-25";
 
       let arr2d = [];
       const enumMonths = [undefined, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -185,8 +234,9 @@
         }
       }
       function calculate() {
-        let container = document.getElementById("tableBody");
-        container.innerHTML = "";
+        let tableContainer = document.getElementById("tableBody");
+        tableContainer.innerHTML = "";
+
         const approvalDate = new Date(document.querySelector("#approval-date").value);
         const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
         const trip1LeaveDate = new Date(document.querySelector("#trip1-leave-date").value);
@@ -195,54 +245,81 @@
         const trip2EnterDate = new Date(document.querySelector("#trip2-enter-date").value);
         const trip3LeaveDate = new Date(document.querySelector("#trip3-leave-date").value);
         const trip3EnterDate = new Date(document.querySelector("#trip3-enter-date").value);
-        
+        const trip4LeaveDate = new Date(document.querySelector("#trip4-leave-date").value);
+        const trip4EnterDate = new Date(document.querySelector("#trip4-enter-date").value);
+        const trip5LeaveDate = new Date(document.querySelector("#trip5-leave-date").value);
+        const trip5EnterDate = new Date(document.querySelector("#trip5-enter-date").value);
+        const trip6LeaveDate = new Date(document.querySelector("#trip6-leave-date").value);
+        const trip6EnterDate = new Date(document.querySelector("#trip6-enter-date").value);
+        const trip7LeaveDate = new Date(document.querySelector("#trip7-leave-date").value);
+        const trip7EnterDate = new Date(document.querySelector("#trip7-enter-date").value);
+        const trip8LeaveDate = new Date(document.querySelector("#trip8-leave-date").value);
+        const trip8EnterDate = new Date(document.querySelector("#trip8-enter-date").value);
+
+        enumYears = []
+        for (let i = 0 ; i < 6 ; i++){
+          enumYears[i] = approvalDate.getFullYear()+i;
+        }
+
         let trip0DaysOutsideUK = 0;
         let trip1DaysOutsideUK = 0;
         let trip2DaysOutsideUK = 0;
         let trip3DaysOutsideUK = 0;
+        let trip4DaysOutsideUK = 0;
+        let trip5DaysOutsideUK = 0;
+        let trip6DaysOutsideUK = 0;
+        let trip7DaysOutsideUK = 0;
+        let trip8DaysOutsideUK = 0;
         let totalDaysOutsideUK = 0;
 
-        // creating two dimensional array
-        for (let i = 0; i < 6; i++) {
-          for(let j = 0; j < 13; j++) {
-            arr2d[i] = [];
+        const rows = 6;
+        const columns = 12;
+
+        for (let i = 0; i < rows; i++) {
+          arr2d[i] = [];
+          for(let j = 0; j < columns; j++) {
+            arr2d[i][j] = 0;
           }
         }
-        for (let i = 0; i < 6; i++) {
-          for(let j = 0; j < 12; j++) {
-            arr2d[i][j] = 0;
-            // if (j == 0){
-            //   arr2d[i][j] = approvalDate.getFullYear() + i;
-            // }
-          }
-        } 
-
-
 
         // calculation section
         trip0DaysOutsideUK = calculateDaysOutsideUKByTrip(0, approvalDate, firstEnterDate);
         trip1DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip1LeaveDate, trip1EnterDate);
         trip2DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip2LeaveDate, trip2EnterDate);
         trip3DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip3LeaveDate, trip3EnterDate);
-        totalDaysOutsideUK = trip0DaysOutsideUK + trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK;
+        trip4DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip4LeaveDate, trip4EnterDate);
+        trip5DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip5LeaveDate, trip5EnterDate);
+        trip6DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip6LeaveDate, trip6EnterDate);
+        trip7DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip7LeaveDate, trip7EnterDate);
+        trip8DaysOutsideUK = calculateDaysOutsideUKByTrip(1, trip8LeaveDate, trip8EnterDate);
+        totalDaysOutsideUK = trip0DaysOutsideUK + trip1DaysOutsideUK + trip2DaysOutsideUK + trip3DaysOutsideUK + trip4DaysOutsideUK;
+        totalDaysOutsideUK += trip5DaysOutsideUK + trip6DaysOutsideUK + trip7DaysOutsideUK + trip8DaysOutsideUK;
      
         // output section
         document.querySelector("#trip0-result").innerHTML = `Full days outside UK before 1st entrance: ${trip0DaysOutsideUK}`;
         document.querySelector("#trip1-result").innerHTML = `Trip 1 full days Outside UK: ${trip1DaysOutsideUK}`;
         document.querySelector("#trip2-result").innerHTML = `Trip 2 full days Outside UK: ${trip2DaysOutsideUK}`;
         document.querySelector("#trip3-result").innerHTML = `Trip 3 full days Outside UK: ${trip3DaysOutsideUK}`;
+        document.querySelector("#trip4-result").innerHTML = `Trip 4 full days Outside UK: ${trip4DaysOutsideUK}`;
+        document.querySelector("#trip5-result").innerHTML = `Trip 5 full days Outside UK: ${trip5DaysOutsideUK}`;
+        document.querySelector("#trip6-result").innerHTML = `Trip 6 full days Outside UK: ${trip6DaysOutsideUK}`;
+        document.querySelector("#trip7-result").innerHTML = `Trip 7 full days Outside UK: ${trip7DaysOutsideUK}`;
+        document.querySelector("#trip8-result").innerHTML = `Trip 8 full days Outside UK: ${trip8DaysOutsideUK}`;
         document.querySelector("#total-result").innerHTML = `Total full days Outside UK: ${totalDaysOutsideUK}`;
 
         // table 
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let holidayDays = {};
         countOutsideUKDaysInMonths(approvalDate, approvalDate, firstEnterDate);
         countOutsideUKDaysInMonths(approvalDate, trip1LeaveDate, trip1EnterDate);
         countOutsideUKDaysInMonths(approvalDate, trip2LeaveDate, trip2EnterDate);
         countOutsideUKDaysInMonths(approvalDate, trip3LeaveDate, trip3EnterDate);
+        countOutsideUKDaysInMonths(approvalDate, trip4LeaveDate, trip4EnterDate);
+        countOutsideUKDaysInMonths(approvalDate, trip5LeaveDate, trip5EnterDate);
+        countOutsideUKDaysInMonths(approvalDate, trip6LeaveDate, trip6EnterDate);
+        countOutsideUKDaysInMonths(approvalDate, trip7LeaveDate, trip7EnterDate);
+        countOutsideUKDaysInMonths(approvalDate, trip8LeaveDate, trip8EnterDate);
 
         // counting in rolling 12 months
-        //temp1 --
         const arr1d = arr2d.flat();
         let daySum = 0;
         let k = 0 ;
@@ -254,45 +331,44 @@
           if (daySum > 180) {
             exceedYear = parseInt(k/12);
             exceedMonth = parseInt(k%12);
-            alert(`Over 180days outside UK found. \nStarting: ${exceedYear}-${enumMonths[exceedMonth+1]} with days: ${daySum}`);
-            // console.log(`Sum of elements from index ${k} to ${k + 11} is over 180: ${daySum}`);
-            // alert(`Sum of elements from index ${k} to ${k + 11} is over 180: ${daySum}`);
+            alert(`Over 180days outside UK found. \nStarting: ${enumYears[exceedYear]}-${enumMonths[exceedMonth+1]} with days: ${daySum}`);
             break;
           }
         }
         
+        // print out the table wtih colour
         let colourExceed180Days = 0;
-        // print out table
         for (let i = 0; i < arr2d.length; i++) {
           let row = arr2d[i];
           let rowElement = document.createElement("tr");
           
-          for (let j = 0; j < row.length; j++) {
-            let cell = row[j];
+          for (let j = 0; j < row.length + 1; j++) {
+            let cell;
+
+            if (j === 0) {
+              cell = approvalDate.getFullYear() + i;
+            } else {
+              cell = row[j - 1];
+            }
+            
             let cellElement = document.createElement("td");
             cellElement.innerHTML = cell;
-            
-            if ((i == exceedYear && j == exceedMonth) || (colourExceed180Days >0 && colourExceed180Days < 12)){
-              cellElement.style.backgroundColor = "green";
-              colourExceed180Days += 1;
+
+            if (j > 0) {
+              if ((i === exceedYear && j === exceedMonth + 1) || (colourExceed180Days > 0 && colourExceed180Days < 12)) {
+                cellElement.style.backgroundColor = "yellow";
+                colourExceed180Days += 1;
+              }
             }
+            
             rowElement.appendChild(cellElement);
           }
-          container.appendChild(rowElement);
+          
+          tableContainer.appendChild(rowElement);
         }
-        
-        //-----------------
-        // let table = "<table>";
-        // for (let i = 0; i < arr2d.length; i++) {
-        //   table += "<tr>";
-        //   for (let j = 0; j < arr2d[i].length; j++) {
-        //     table += "<td>" + arr2d[i][j] + "</td>";
-        //   }
-        //   table += "</tr>";
-        // }
-        // table += "</table>";
-        // tableBody.innerHTML = table;
       }
+      document.querySelector("#results").innerHTML = `123123:`;
+
     </script>
   </body>
 </html>
