@@ -72,7 +72,7 @@
             <th>Dec</th>
           </tr>
         </thead>
-        <tbody id="holidayBody">
+        <tbody id="tableBody">
           <!-- Generated table rows will be inserted here -->
         </tbody>
       </table>
@@ -83,12 +83,12 @@
       // for testing
       document.getElementById("approval-date").defaultValue = "2022-01-02";
       document.getElementById("first-enter-date").defaultValue = "2022-01-10";
-      document.getElementById("trip1-leave-date").defaultValue = "2022-01-20";
-      document.getElementById("trip1-enter-date").defaultValue = "2022-06-20";
-      document.getElementById("trip2-leave-date").defaultValue = "2022-12-20";
-      document.getElementById("trip2-enter-date").defaultValue = "2023-02-20";
+      document.getElementById("trip1-leave-date").defaultValue = "2022-01-15";
+      document.getElementById("trip1-enter-date").defaultValue = "2022-02-02";
+      document.getElementById("trip2-leave-date").defaultValue = "2022-03-03";
+      document.getElementById("trip2-enter-date").defaultValue = "2022-12-20";
       document.getElementById("trip3-leave-date").defaultValue = "2023-03-20";
-      document.getElementById("trip3-enter-date").defaultValue = "2023-03-20";
+      document.getElementById("trip3-enter-date").defaultValue = "2023-03-25";
 
       let arr2d = [];
       function isMonthEnd(date) {
@@ -149,6 +149,8 @@
         }
       }
       function calculate() {
+        let container = document.getElementById("tableBody");
+        container.innerHTML = "";
         const approvalDate = new Date(document.querySelector("#approval-date").value);
         const firstEnterDate = new Date(document.querySelector("#first-enter-date").value);
         const trip1LeaveDate = new Date(document.querySelector("#trip1-leave-date").value);
@@ -205,9 +207,10 @@
         const arr1d = arr2d.reduce((acc, cur) => acc.concat(cur), []);
         let daySum = 0;
         let k = 0 ;
+        let q = 0;
         for (k = 0 ; k < arr1d.length-12 ; k++){
           daySum = 0;
-          for (let q = k ; q < 12 ; q++){
+          for (q = k ; q < 13 ; q++){
             if ((parseInt(arr1d[q])) <= 31){
               daySum += parseInt(arr1d[q]);
             }
@@ -215,52 +218,42 @@
           if (daySum > 180){
             alert("Exceed 180 days from: " + k);
             alert("daySum:"+daySum);
+            alert("q:"+ q);
             break;
           }
         }
 
-        let table = "<table>";
+        // print out table
         for (let i = 0; i < arr2d.length; i++) {
-          table += "<tr>";
-          for (let j = 0; j < arr2d[i].length; j++) {
-            table += "<td>" + arr2d[i][j] + "</td>";
-          }
-          table += "</tr>";
-        }
-        table += "</table>";
-        holidayBody.innerHTML = table;
-
-        // ---
-        /*
-        for (let m = start.getMonth(); m <= end.getMonth(); m++) {
-          const year = m === start.getMonth() ? start.getFullYear() : (m === end.getMonth() ? end.getFullYear() : start.getFullYear());
-          const firstDay = new Date(year, m, 1);
-          const lastDay = new Date(year, m + 1, 0);
-          const daysInMonth = lastDay.getDate();
+          let row = arr2d[i];
+          let rowElement = document.createElement("tr");
           
-          holidayDays[year] = holidayDays[year] || {};
-          holidayDays[year][monthNames[m]] = (m === start.getMonth() ? Math.min(daysInMonth, end.getDate()) - start.getDate() + 1 :
-            (m === end.getMonth() ? end.getDate() - 1 : daysInMonth)) +
-            (m > start.getMonth() && m < end.getMonth() ? daysInMonth : 0);
+          for (let j = 0; j < row.length; j++) {
+            let cell = row[j];
+            let cellElement = document.createElement("td");
+            cellElement.innerHTML = cell;
+            
+            if (parseInt(q/13) === i) {
+              cellElement.style.backgroundColor = "red";
+            }
+            
+            rowElement.appendChild(cellElement);
+          }
+          
+          container.appendChild(rowElement);
         }
         
-        let tbody = document.getElementById("holidayBody");
-        tbody.innerHTML = "";
-        for (const year in holidayDays) {
-          let tr = document.createElement("tr");
-          let yearTd = document.createElement("td");
-          yearTd.innerHTML = year;
-          tr.appendChild(yearTd);
-          
-          for (const month of monthNames) {
-            let monthTd = document.createElement("td");
-            monthTd.innerHTML = holidayDays[year][month] || 0;
-            tr.appendChild(monthTd);
-          }
-          
-          tbody.appendChild(tr);
-        };
-        */
+        //-----------------
+        // let table = "<table>";
+        // for (let i = 0; i < arr2d.length; i++) {
+        //   table += "<tr>";
+        //   for (let j = 0; j < arr2d[i].length; j++) {
+        //     table += "<td>" + arr2d[i][j] + "</td>";
+        //   }
+        //   table += "</tr>";
+        // }
+        // table += "</table>";
+        // tableBody.innerHTML = table;
       }
     </script>
   </body>
