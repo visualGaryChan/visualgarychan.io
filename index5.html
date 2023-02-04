@@ -119,14 +119,12 @@
       document.getElementById("first-enter-date").defaultValue = "2022-01-10";
       document.getElementById("trip1-leave-date").defaultValue = "2022-03-15";
       document.getElementById("trip1-enter-date").defaultValue = "2022-03-18";
-      document.getElementById("trip2-leave-date").defaultValue = "2022-09-03";
-      document.getElementById("trip2-enter-date").defaultValue = "2023-05-05";
-      document.getElementById("trip3-leave-date").defaultValue = "2023-07-20";
-      document.getElementById("trip3-enter-date").defaultValue = "2023-07-25";
+      document.getElementById("trip2-leave-date").defaultValue = "2022-05-03";
+      document.getElementById("trip2-enter-date").defaultValue = "2023-02-05";
+      document.getElementById("trip3-leave-date").defaultValue = "2023-03-20";
+      document.getElementById("trip3-enter-date").defaultValue = "2023-03-25";
 
       let arr2d = [];
-      const enumMonths = [undefined, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
       function isMonthEnd(date) {
         return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
       }
@@ -201,7 +199,7 @@
         let trip2DaysOutsideUK = 0;
         let trip3DaysOutsideUK = 0;
         let totalDaysOutsideUK = 0;
-
+        
         // creating two dimensional array
         for (let i = 0; i < 6; i++) {
           for(let j = 0; j < 13; j++) {
@@ -216,8 +214,6 @@
             // }
           }
         } 
-
-
 
         // calculation section
         trip0DaysOutsideUK = calculateDaysOutsideUKByTrip(0, approvalDate, firstEnterDate);
@@ -242,26 +238,25 @@
         countOutsideUKDaysInMonths(approvalDate, trip3LeaveDate, trip3EnterDate);
 
         // counting in rolling 12 months
-        //temp1 --
         const arr1d = arr2d.flat();
         let daySum = 0;
         let k = 0 ;
-        let exceedYear = -1;
-        let exceedMonth = -1;
-        for (k = 0; k <= arr1d.length - 12; k++) {
-          const twelveElements = arr1d.slice(k, k + 12);
-          daySum = twelveElements.reduce((acc, val) => acc + val, 0);
-          if (daySum > 180) {
-            exceedYear = parseInt(k/12);
-            exceedMonth = parseInt(k%12);
-            alert(`Over 180days outside UK found. \nStarting: ${exceedYear}-${enumMonths[exceedMonth+1]} with days: ${daySum}`);
-            // console.log(`Sum of elements from index ${k} to ${k + 11} is over 180: ${daySum}`);
-            // alert(`Sum of elements from index ${k} to ${k + 11} is over 180: ${daySum}`);
-            break;
-          }
-        }
-        
-        let colourExceed180Days = 0;
+        let q = 0;
+        // for (k = 0 ; k < arr1d.length-12 ; k++){
+        //   daySum = 0;
+        //   for (q = k ; q < 13 ; q++){
+        //     if ((parseInt(arr1d[q])) <= 31){
+        //       daySum += parseInt(arr1d[q]);
+        //     }
+        //   }
+        //   if (daySum > 180){
+        //     alert("Exceed 180 days from: " + k);
+        //     alert("daySum:"+daySum);
+        //     alert("q:"+ q);
+        //     break;
+        //   }
+        // }
+
         // print out table
         for (let i = 0; i < arr2d.length; i++) {
           let row = arr2d[i];
@@ -272,12 +267,13 @@
             let cellElement = document.createElement("td");
             cellElement.innerHTML = cell;
             
-            if ((i == exceedYear && j == exceedMonth) || (colourExceed180Days >0 && colourExceed180Days < 12)){
-              cellElement.style.backgroundColor = "green";
-              colourExceed180Days += 1;
-            }
+            // if (parseInt(q/13) === i) {
+            //   cellElement.style.backgroundColor = "green";
+            // }
+            
             rowElement.appendChild(cellElement);
           }
+          
           container.appendChild(rowElement);
         }
         
